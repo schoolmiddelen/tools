@@ -1,0 +1,98 @@
+symfony commandos
+
+cd de map waar het project in moet
+setup symfony project:
+
+composer create-project symfony/website-skeleton dezenaamveranderenineigennaam
+
+.env database aanpassen onderin
+
+DATABASE_URL="mysql://root@127.0.0.1:3306/databasenaam?serverVersion=5.7"
+
+//Maak de database (vergeet dit niet in het engels te doen)//
+php bin/console doctrine:database:create
+
+//Maak tabelen (vergeet dit niet in het engels te doen en enkelvoudig)//
+php bin/console make:entity
+
+//Run de queries - ook na elke verandering aan de database//
+php bin/console doctrine:schema:update --force
+
+//Relaties maken tussen de tabellen//
+php bin/console make:entity
+
+vervolgens de naam van de entity/tabel
+hierna de naam van het nieuwe field in de tabel
+hierna fieldtype "relation"
+hierna de naam van de entity/tabel waar de relatie mee gelegd moet worden
+hierna de soort relatie (bijv. ManyToOne)
+allowed to be null "yes"
+new property "yes"
+new field name "ENTER"
+auto delete orphaned "no"
+New property name "ENTER"
+
+//Maak een crud systeem voor een tabel//
+php bin/console make:crud
+Vervolgens de naam van de tabel	
+
+Maak (default)controller:
+
+php bin/console make:controller
+
+(optioneel) zet de bootstrap cdn in templates/base.html.twig tussen het meta blok en de title blok:
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+DOMPDF maken:
+
+Installeer dompdf:
+composer require dompdf/dompdf
+
+maak een nieuwe file aan in de map waarvan de dompdf gegenereerd moet worden, noem deze file pdfbon.html.twig
+
+zet in de betreffende controller het volgende, en vervang het woord "class" met de naam van het betreffende (bijvoorbeeld bestelling), het woord "class" in kleine letters, het woord "Class" met een hoofdletter:
+
+#[Route('/pdfbon/{id}', name: 'class_pdf_show', methods: ['GET', 'POST'])]
+    public function showPDF(Request $request, Class $class): Response
+    {
+        // Configure Dompdf according to your needs
+        $pdfOptions = new Options();
+        $pdfOptions->set('defaultFont', 'Arial');
+
+        // Instantiate Dompdf with our options
+        $dompdf = new Dompdf($pdfOptions);
+
+        // Retrieve the HTML generated in our twig file
+        $html = $this->renderView('class/pdfbon.html.twig', [
+            'class' => $class,
+            'title' => "Welcome to our PDF Test"
+        ]);
+
+        // Load HTML to Dompdf
+        $dompdf->loadHtml($html);
+
+        // (Optional) Setup the paper size and orientation 'portrait' or 'portrait'
+        $dompdf->setPaper('A4', 'portrait');
+
+        // Render the HTML as PDF
+        $dompdf->render();
+
+        // Output the generated PDF to Browser (inline view)
+        $dompdf->stream("mypdf.pdf", [
+            "Attachment" => false
+        ]);
+
+        exit (0);
+    }
+
+zet bovenin bij de "use" in de controller, de volgende 2 uses erbij:
+
+use Dompdf\Dompdf;
+use Dompdf\Options;
+
+voeg vervolgens deze knop toe aan de "show" van de betreffende map (zet deze knop erbij onder de "edit" knop) en verander de naam class in het betreffende:
+
+<a href="{{ path('class_pdf_show', {'id': class.id}) }}">PDF</a>
+
+kopieer nu als voorbeeld de table van de show van het betreffende, in de pdfbon.html.twig van het betreffende.
