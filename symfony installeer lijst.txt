@@ -1,0 +1,11 @@
+symfony installeer lijst
+
+composer
+symfony
+xampp
+phpstorm
+plugins op php storm:
+symfony support
+.env files support
+php annotations
+symfony plugin rechts onderin
